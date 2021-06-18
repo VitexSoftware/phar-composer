@@ -8,7 +8,7 @@ Homepage: https://github.com/clue/phar-composer
 
 Package: phar-composer
 Multi-Arch: foreign
-Depends: ${misc:Depends}, php-cli
+Depends: ${misc:Depends}, php-cli, php-curl
 Architecture: all
 Description: Simple phar creation for every PHP project managed via Composer 
  It takes your existing project's composer.json and builds an executable 
