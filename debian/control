@@ -2,7 +2,7 @@ Source: phar-composer
 Section: php
 Priority: optional
 Maintainer: "Vítězslav Dvořák" <info@vitexsoftware.cz>
-Build-Depends: debhelper (>=11~),composer
+Build-Depends: debhelper (>=11~),composer, php-xml
 Standards-Version: 4.1.4
 Homepage: https://github.com/clue/phar-composer
 
