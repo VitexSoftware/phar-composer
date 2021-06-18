@@ -1,0 +1,17 @@
+Source: phar-composer
+Section: php
+Priority: optional
+Maintainer: "Vítězslav Dvořák" <info@vitexsoftware.cz>
+Build-Depends: debhelper (>=11~),composer
+Standards-Version: 4.1.4
+Homepage: https://github.com/clue/phar-composer
+
+Package: phar-composer
+Multi-Arch: foreign
+Depends: ${misc:Depends}, php-cli
+Architecture: all
+Description: Simple phar creation for every PHP project managed via Composer 
+ It takes your existing project's composer.json and builds an executable 
+ phar for your project among with its bundled dependencies. Create a single 
+ executable phar archive, including its dependencies (i.e. vendor directory 
+ included)

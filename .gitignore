@@ -1,3 +1,13 @@
 /vendor
 /build
 /phar-composer-*.phar
+/nbproject/private/
+
+debian/.debhelper/
+debian/debhelper-build-stamp
+debian/files
+debian/phar-composer.debhelper.log
+debian/phar-composer.substvars
+debian/phar-composer/
+nbproject/
+
