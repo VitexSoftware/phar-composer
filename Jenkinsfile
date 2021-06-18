@@ -16,22 +16,15 @@ pipeline {
             steps {
                 dir('build/debian/package') {
                     checkout scm
-	            buildPackage()
-	            installPackages()
+		            buildPackage()
+		            installPackages()
                 }
                 stash includes: 'dist/**', name: 'dist-buster'
-                script {
-                    step ([$class: 'CopyArtifact',
-                        projectName: 'composer-global-update',
-                        filter: "**/*.deb",
-                        target: '/var/tmp/deb',
-                        flatten: true
-                        ]);
-                }
             }
             post {
                 success {
                     archiveArtifacts 'dist/debian/'
+                    copyArtifact()
                 }
             }
 
@@ -46,22 +39,15 @@ pipeline {
             steps {
                 dir('build/debian/package') {
                     checkout scm
-	            buildPackage()
-	            installPackages()
+		            buildPackage()
+		            installPackages()
                 }
                 stash includes: 'dist/**', name: 'dist-bullseye'
-                script {
-                    step ([$class: 'CopyArtifact',
-                        projectName: 'composer-global-update',
-                        filter: "**/*.deb",
-                        target: '/var/tmp/deb',
-                        flatten: true
-                        ]);
-                }
             }
             post {
                 success {
                     archiveArtifacts 'dist/debian/'
+                    copyArtifact()
                 }
             }
         }
@@ -73,22 +59,15 @@ pipeline {
             steps {
                 dir('build/debian/package') {
                     checkout scm
-	            buildPackage()
-	            installPackages()
+		            buildPackage()
+		            installPackages()
                 }
                 stash includes: 'dist/**', name: 'dist-trusty'
-                script {
-                    step ([$class: 'CopyArtifact',
-                        projectName: 'composer-global-update',
-                        filter: "**/*.deb",
-                        target: '/var/tmp/deb',
-                        flatten: true
-                        ]);
-                }
             }
             post {
                 success {
                     archiveArtifacts 'dist/debian/'
+                    copyArtifact()
                 }
             }
         }
@@ -100,50 +79,52 @@ pipeline {
             steps {
                 dir('build/debian/package') {
                     checkout scm
-	            buildPackage()
-	            installPackages()
+		            buildPackage()
+		            installPackages()
                 }
-                stash includes: 'dist/**', name: 'dist-hirsute'
-                script {
-                    step ([$class: 'CopyArtifact',
-                        projectName: 'composer-global-update',
-                        filter: "**/*.deb",
-                        target: '/var/tmp/deb',
-                        flatten: true
-                        ]);
-                }
+                stash includes: 'dist/**', name: 'dist-trusty'
             }
             post {
                 success {
                     archiveArtifacts 'dist/debian/'
+                    copyArtifact()
                 }
             }
         }
 
-
     }
+}
+
+def copyArtifact(){
+    step ([$class: 'CopyArtifact',
+        projectName: '${JOB_NAME}',
+        filter: "**/*.deb",
+        target: '/var/tmp/deb',
+        flatten: true,
+        selector: specific('${BUILD_NUMBER}')
+    ]);
 }
 
 def buildPackage() {
 
     def DIST = sh (
-    script: 'lsb_release -sc',
+	script: 'lsb_release -sc',
         returnStdout: true
     ).trim()
 
     def DISTRO = sh (
-    script: 'lsb_release -sd',
+	script: 'lsb_release -sd',
         returnStdout: true
     ).trim()
 
 
     def SOURCE = sh (
-    script: 'dpkg-parsechangelog --show-field Source',
+	script: 'dpkg-parsechangelog --show-field Source',
         returnStdout: true
     ).trim()
 
     def VERSION = sh (
-    script: 'dpkg-parsechangelog --show-field Version',
+	script: 'dpkg-parsechangelog --show-field Version',
         returnStdout: true
     ).trim()
 
