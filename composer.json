@@ -11,14 +11,14 @@
         }
     ],
     "require": {
-        "herrera-io/box": "^1.5",
-        "knplabs/packagist-api": "^1.0",
-        "symfony/console": "^5.0 || ^4.0 || ^3.0 || ^2.5",
-        "symfony/finder": "^5.0 || ^4.0 || ^3.0 || ^2.5",
-        "symfony/process": "^5.0 || ^4.0 || ^3.0 || ^2.5"
+        "herrera-io/box": "*",
+        "knplabs/packagist-api": "*",
+        "symfony/console": "*",
+        "symfony/finder": "*",
+        "symfony/process": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4.8"
+        "phpunit/phpunit": "*"
     },
     "autoload": {
         "psr-0": {"Clue": "src/"}
