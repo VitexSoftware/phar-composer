@@ -22,7 +22,7 @@ node() {
         stage('SCM Checkout') {
             checkout scm
             def control = readFile("${WORKSPACE}/debian/control")
-            theInfoFile.eachLine { line ->
+            control.eachLine { line ->
                 if (line.trim()) {
                     def (key,value) = line.split(': ').collect { it.trim() }
                     if ( key == 'Architecture' ) {
