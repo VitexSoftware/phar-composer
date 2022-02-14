@@ -1,6 +1,6 @@
 #!groovy
 
-def workspace = manager.build.getEnvVars()["WORKSPACE"]
+
 String[] architectures = []
 String[] distributions = ['debian:buster', 'debian:bullseye', 'debian:bookworm', 'ubuntu:focal', 'ubuntu:hirsute', 'ubuntu:impish']
 
