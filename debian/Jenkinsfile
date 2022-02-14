@@ -1,8 +1,5 @@
 #!groovy
 
-control = new File('debian/control')
-
-
 String[] architectures = []
 String[] distributions = ['debian:buster', 'debian:bullseye', 'debian:bookworm', 'ubuntu:focal', 'ubuntu:hirsute', 'ubuntu:impish']
 
@@ -16,20 +13,25 @@ String ver = ''
 properties([
     copyArtifactPermission('*')
 ])
-
-checkout scm
-
-if ( !control.exists() ) {
-    println 'File does not exist'
-} else {
-    theInfoFile.eachLine { line ->
-        if ( line.trim() ) {
-            def (key,value) = line.split( ': ' ).collect { it.trim() }
-            if( key == 'Architecture' ){
-                if(value == 'any'){
-                    distributions = ['amd64', 'armhf', 'aarch64']
-                } else {
-                    distributions = [value]
+node() {
+    ansiColor('xterm') {
+        stage('SCM Checkout') {
+            checkout scm
+            control = new File('debian/control')
+            if ( !control.exists() ) {
+                println 'File does not exist'
+            } else {
+                theInfoFile.eachLine { line ->
+                    if (line.trim()) {
+                        def (key,value) = line.split(': ').collect { it.trim() }
+                        if ( key == 'Architecture' ) {
+                            if (value == 'any') {
+                                distributions = ['amd64', 'armhf', 'aarch64']
+                            } else {
+                                distributions = [value]
+                            }
+                        }
+                    }
                 }
             }
         }
