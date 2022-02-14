@@ -12,7 +12,7 @@ override_dh_auto_clean:
 	dh_auto_clean
 
 override_dh_prep:
-	rm -rfv vendor comoder.lock
+	rm -rfv vendor composer.lock
 	composer install --no-dev
 	php -d phar.readonly=off bin/phar-composer -n build --ansi .
 	dh_prep
