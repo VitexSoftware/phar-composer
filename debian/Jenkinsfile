@@ -11,8 +11,6 @@ String distroCodename = ''
 String ver = ''
 
 def readControl(){
-    def file = "${WORKSPACE}/debian/control"
-    def content = readFile(file)
     return content
 }
 
@@ -23,23 +21,15 @@ node() {
     ansiColor('xterm') {
         stage('SCM Checkout') {
             checkout scm
-
-            def control = readControl()
-
-            if ( !control.exists() ) {
-                println 'File debian/control does not exist'
-                currentBuild.result = 'FAIL'
-                return
-            } else {
-                theInfoFile.eachLine { line ->
-                    if (line.trim()) {
-                        def (key,value) = line.split(': ').collect { it.trim() }
-                        if ( key == 'Architecture' ) {
-                            if (value == 'any') {
-                                distributions = ['amd64', 'armhf', 'aarch64']
-                            } else {
-                                distributions = [value]
-                            }
+            def control = readFile("${WORKSPACE}/debian/control")
+            theInfoFile.eachLine { line ->
+                if (line.trim()) {
+                    def (key,value) = line.split(': ').collect { it.trim() }
+                    if ( key == 'Architecture' ) {
+                        if (value == 'any') {
+                            distributions = ['amd64', 'armhf', 'aarch64']
+                        } else {
+                            distributions = [value]
                         }
                     }
                 }
