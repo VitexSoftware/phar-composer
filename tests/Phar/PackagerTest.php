@@ -7,7 +7,8 @@ class PackagerTest extends TestCase
 {
     private $packager;
 
-    public function setUp()
+    /** @before */
+    public function setUpPackager()
     {
         $this->packager = new Packager();
     }
@@ -20,12 +21,7 @@ class PackagerTest extends TestCase
      */
     public function testExec($expectedOutput, $command)
     {
-        $this->expectOutputString($expectedOutput);
-
-        // Travis CI occasionally discards (parts of) the output, so wrap in shell and add some delay just in case
-        if (getenv('TRAVIS') === 'true') {
-            $command = 'exec sh -c ' . escapeshellarg($command . '; sleep 0.1');
-        }
+        $this->expectOutputString(str_replace("\n", PHP_EOL, $expectedOutput));
 
         $this->packager->exec($command);
     }
@@ -39,44 +35,67 @@ class PackagerTest extends TestCase
             ),
             array(
                 "\n    error\n",
-                'echo error >&2'
+                'echo error>&2'
             ),
             array(
                 "\n    mixed\n    errors\n",
-                'echo mixed && echo errors >&1'
+                'php -r ' . escapeshellarg('fwrite(STDOUT, \'mixed\' . PHP_EOL);fwrite(STDERR,\'errors\' . PHP_EOL);')
             )
         );
     }
 
-    /**
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage not installed
-     */
     public function testEmptyNotInstalled()
     {
+        $this->setExpectedException('RuntimeException', 'not installed');
         $this->packager->getPharer(__DIR__ . '/../fixtures/01-empty');
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage not a readable file
-     */
     public function testNoComposer()
     {
+        $this->setExpectedException('InvalidArgumentException', 'not a readable file');
         $this->packager->getPharer(__DIR__ . '/../fixtures/02-no-composer');
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage not a readable file
-     */
     public function testNoComposerMissing()
     {
+        $this->setExpectedException('InvalidArgumentException', 'not a readable file');
         $this->packager->getPharer(__DIR__ . '/../fixtures/02-no-composer/composer.json');
+    }
+
+    public function testGetPharerTriesToExecuteGitStubInDirectoryWithSpaceAndThrowsWhenGitStubDoesNotCreateTargetDirectory()
+    {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $this->markTestSkipped('Not supported on Windows');
+        }
+
+        $path = getenv('PATH');
+
+        $temp = sys_get_temp_dir() . '/test phar-composer-' . mt_rand();
+        mkdir($temp);
+        symlink(exec('which echo'), $temp . '/git');
+
+        putenv('PATH=' . $temp);
+
+        try {
+            $this->packager->setOutput(false);
+            $this->packager->getPharer('user@git.example.com:user/project.git');
+
+            $this->fail();
+        } catch (Exception $e) {
+            putenv('PATH=' . $path);
+            unlink($temp . '/git');
+            rmdir($temp);
+
+            $this->assertStringMatchesFormat('Unable to parse given path "/%s/phar-composer%d/composer.json"', $e->getMessage());
+        }
     }
 
     public function testGetSystemBinDefaultsToPackageNameInBin()
     {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $this->markTestSkipped('Not supported on Windows');
+        }
+
         $package = new Package(array(
             'name' => 'clue/phar-composer'
         ), '');
@@ -86,6 +105,10 @@ class PackagerTest extends TestCase
 
     public function testGetSystemBinReturnsPackageDirectoryBinWhenNameIsNotSet()
     {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $this->markTestSkipped('Not supported on Windows');
+        }
+
         $package = new Package(array(), __DIR__);
 
         $this->assertEquals('/usr/local/bin/Phar', $this->packager->getSystemBin($package, null));
@@ -93,6 +116,10 @@ class PackagerTest extends TestCase
 
     public function testGetSystemBinReturnsPackageDirectoryRealNameInBinWhenNameIsNotSet()
     {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $this->markTestSkipped('Not supported on Windows');
+        }
+
         $package = new Package(array(), __DIR__ . '/../');
 
         $this->assertEquals('/usr/local/bin/tests', $this->packager->getSystemBin($package, null));
@@ -100,6 +127,10 @@ class PackagerTest extends TestCase
 
     public function testGetSystemBinReturnsCustomPackageInBin()
     {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $this->markTestSkipped('Not supported on Windows');
+        }
+
         $package = new Package(array(
             'name' => 'clue/phar-composer'
         ), '');
@@ -109,6 +140,10 @@ class PackagerTest extends TestCase
 
     public function testGetSystemBinReturnsCustomTargetPath()
     {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $this->markTestSkipped('Not supported on Windows');
+        }
+
         $package = new Package(array(
             'name' => 'clue/phar-composer'
         ), '');
@@ -118,6 +153,10 @@ class PackagerTest extends TestCase
 
     public function testGetSystemBinReturnsDefaultPackageNameInCustomBin()
     {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $this->markTestSkipped('Not supported on Windows');
+        }
+
         $package = new Package(array(
             'name' => 'clue/phar-composer'
         ), '');
@@ -158,6 +197,8 @@ class PackagerTest extends TestCase
             array('git @github.com:clue/phar-composer.git'),
             array('-invalid@github.com:clue/phar-composer.git'),
             array(':clue/phar-composer.git'),
+            array('/home/alice/Desktop/package/acme.json'),
+            array('C:\Users\Alice\Desktop\package\acme.json')
         );
     }
 

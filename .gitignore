@@ -2,7 +2,7 @@
 /build
 /phar-composer-*.phar
 /nbproject/private/
-
+/composer.lock
 debian/.debhelper/
 debian/debhelper-build-stamp
 debian/files

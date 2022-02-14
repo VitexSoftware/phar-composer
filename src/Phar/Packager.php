@@ -131,7 +131,7 @@ class Packager
 
             $finder = new ExecutableFinder();
 
-            $git = $finder->find('git', '/usr/bin/git');
+            $git = escapeshellarg($finder->find('git', 'git'));
 
             $that = $this;
             $this->displayMeasure(
@@ -150,9 +150,9 @@ class Packager
             $package = $pharcomposer->getPackageRoot()->getName();
 
             if (is_file('composer.phar')) {
-                $command = $finder->find('php', '/usr/bin/php') . ' composer.phar';
+                $command = escapeshellarg($finder->find('php', 'php')) . ' composer.phar';
             } else {
-                $command = $finder->find('composer', '/usr/bin/composer');
+                $command = escapeshellarg($finder->find('composer', 'composer'));
             }
             $command .= ' install --no-dev --no-progress --no-scripts';
 
@@ -179,9 +179,9 @@ class Packager
 
             $finder = new ExecutableFinder();
             if (is_file('composer.phar')) {
-                $command = $finder->find('php', '/usr/bin/php') . ' composer.phar';
+                $command = escapeshellarg($finder->find('php', 'php')) . ' composer.phar';
             } else {
-                $command = $finder->find('composer', '/usr/bin/composer');
+                $command = escapeshellarg($finder->find('composer', 'composer'));
             }
             $command .= ' create-project ' . escapeshellarg($package) . ' ' . escapeshellarg($path) . ' --no-dev --no-progress --no-scripts';
 
@@ -264,12 +264,12 @@ class Packager
         $process->setTimeout(null);
         $code = $process->run(function($type, $data) use ($output, &$nl) {
             if ($nl === true) {
-                $data = "\n" . $data;
+                $data = PHP_EOL . $data;
                 $nl = false;
             }
             if (substr($data, -1) === "\n") {
                 $nl = true;
-                $data = substr($data, 0, -1);
+                $data = substr($data, 0, -strlen(PHP_EOL));
             }
             $data = str_replace("\n", "\n    ", $data);
 
@@ -327,7 +327,7 @@ class Packager
 
     public function isPackageUrl($path)
     {
-        return (strpos($path, '://') !== false && @parse_url($path) !== false) || preg_match('/^[^-\/\s][^:\/\s]*:\S+/', $path);
+        return (strpos($path, '://') !== false && @parse_url($path) !== false) || preg_match('/^[^-\/\s][^:\/\s]*:[^\s\\\\]\S*/', $path);
     }
 
     private function getDirTemporary()
