@@ -17,8 +17,8 @@ node() {
     ansiColor('xterm') {
         stage('SCM Checkout') {
             checkout scm
-            sh 'cat debian/control'
-            control = new File('debian/control')
+
+            def control = ReadFile 'debian/control'
             if ( !control.exists() ) {
                 println 'File does not exist'
             } else {
