@@ -10,6 +10,13 @@ String architecture = ''
 String distroCodename = ''
 String ver = ''
 
+@NonCPS
+def readControl(){
+    def file = "${WORKSPACE}/debian/control"
+    def content = readFile(file)
+    return content
+}
+
 properties([
     copyArtifactPermission('*')
 ])
@@ -18,7 +25,7 @@ node() {
         stage('SCM Checkout') {
             checkout scm
 
-            def control = ReadFile 'debian/control'
+            def control = readControl()
 
             if ( !control.exists() ) {
                 println 'File debian/control does not exist'
