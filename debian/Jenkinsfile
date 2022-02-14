@@ -19,6 +19,7 @@ node() {
         stage('SCM Checkout') {
             checkout scm
             def control = readFile( file: "${WORKSPACE}/debian/control")
+            println control
             def lines = control.readLines() 
             for(line in lines) {
                 if (line.trim()) {
