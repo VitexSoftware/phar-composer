@@ -25,11 +25,12 @@ node() {
             for(line in lines) {
                 if (line.trim()) {
 
-                    println line
-
 
                     def (key,value) = line.split(': ').collect { it.trim() }
                     if ( key == 'Architecture' ) {
+
+                        println value
+
                         if (value == 'any') {
                             distributions = ['amd64', 'armhf', 'aarch64']
                         } else {
