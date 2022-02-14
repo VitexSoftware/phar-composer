@@ -1,6 +1,9 @@
 #!groovy
 
-String[] architectures = ['amd64', 'armhf', 'aarch64']
+control = new File('debian/control')
+
+
+String[] architectures = []
 String[] distributions = ['debian:buster', 'debian:bullseye', 'debian:bookworm', 'ubuntu:focal', 'ubuntu:hirsute', 'ubuntu:impish']
 
 String vendor = 'vitexsoftware'
@@ -14,13 +17,31 @@ properties([
     copyArtifactPermission('*')
 ])
 
+
+if ( !control.exists() ) {
+    println 'File does not exist'
+} else {
+    theInfoFile.eachLine { line ->
+        if ( line.trim() ) {
+            def (key,value) = line.split( ': ' ).collect { it.trim() }
+            if( key == 'Architecture' ){
+                if(value == 'any'){
+                    distributions = ['amd64', 'armhf', 'aarch64']
+                } else {
+                    distributions = [value]
+                }
+            }
+        }
+    }
+}
+
 architectures.each {
     architecture = it
     distributions.each {
         distribution = it
 
         def dist = distribution.split(':')
-  //      distroFamily = dist[0]
+        //      distroFamily = dist[0]
         distroCodename = dist[1]
 
         def buildImage = ''
