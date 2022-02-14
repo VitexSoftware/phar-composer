@@ -22,9 +22,11 @@ node() {
             
             def lines = control.readLines() 
 
-            println lines
-
             for(line in lines) {
+
+            println line
+
+
                 if (line.trim()) {
                     def (key,value) = line.split(': ').collect { it.trim() }
                     if ( key == 'Architecture' ) {
