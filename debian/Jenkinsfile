@@ -19,17 +19,11 @@ node() {
         stage('SCM Checkout') {
             checkout scm
             def control = readFile( file: "${WORKSPACE}/debian/control")
-            
             def lines = control.readLines() 
-
             for(line in lines) {
                 if (line.trim()) {
-
-
                     def (key,value) = line.split(': ').collect { it.trim() }
                     if ( key == 'Architecture' ) {
-
-                        println value
 
                         if (value == 'any') {
                             distributions = ['amd64', 'armhf', 'aarch64']
@@ -39,10 +33,8 @@ node() {
                     }
                 }
             }
-            println distributions
         }
     }
-}
 
 architectures.each {
     architecture = it
@@ -94,4 +86,6 @@ architectures.each {
             }
         }
     }
+}
+
 }
