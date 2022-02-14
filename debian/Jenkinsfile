@@ -19,8 +19,11 @@ node() {
             checkout scm
 
             def control = ReadFile 'debian/control'
+
             if ( !control.exists() ) {
-                println 'File does not exist'
+                println 'File debian/control does not exist'
+                currentBuild.result = 'FAIL'
+                return
             } else {
                 theInfoFile.eachLine { line ->
                     if (line.trim()) {
