@@ -10,7 +10,6 @@ String architecture = ''
 String distroCodename = ''
 String ver = ''
 
-@NonCPS
 def readControl(){
     def file = "${WORKSPACE}/debian/control"
     def content = readFile(file)
