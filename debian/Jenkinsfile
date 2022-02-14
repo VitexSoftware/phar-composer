@@ -10,10 +10,6 @@ String architecture = ''
 String distroCodename = ''
 String ver = ''
 
-def readControl(){
-    return content
-}
-
 properties([
     copyArtifactPermission('*')
 ])
@@ -21,7 +17,7 @@ node() {
     ansiColor('xterm') {
         stage('SCM Checkout') {
             checkout scm
-            def control = readFile("${WORKSPACE}/debian/control")
+            def control = readFile( file: "${WORKSPACE}/debian/control")
             def lines = control.readLines() 
             for(line in lines) {
                 if (line.trim()) {
@@ -35,6 +31,7 @@ node() {
                     }
                 }
             }
+            println(architectures) 
         }
     }
 }
