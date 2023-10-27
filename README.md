@@ -144,6 +144,18 @@ This project aims to run on any platform and thus does not require any PHP
 extensions and supports running on legacy PHP 5.3 through current PHP 8+.
 It's *highly recommended to use the latest supported PHP version* for this project.
 
+### As a Debian package
+
+```shell
+sudo apt install lsb-release wget apt-transport-https bzip2
+
+wget -qO- https://repo.vitexsoftware.com/keyring.gpg | sudo tee /etc/apt/trusted.gpg.d/vitexsoftware.gpg
+echo "deb [signed-by=/etc/apt/trusted.gpg.d/vitexsoftware.gpg]  https://repo.vitexsoftware.com  $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/vitexsoftware.list
+sudo apt update
+
+sudo apt install phar-composer
+```
+
 ### As a phar (recommended)
 
 You can simply download a pre-compiled and ready-to-use version as a Phar
