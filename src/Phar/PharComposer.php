@@ -138,7 +138,7 @@ class PharComposer
                 }
 
                 $dir = $pathVendor . $dir;
-                $packages []= new Package($package, $dir);
+                $packages [] = new Package($package, $dir);
             }
         }
 
@@ -147,7 +147,7 @@ class PharComposer
 
     public function build()
     {
-        $this->log('[' . $this->step . '/' . $this->step.'] Creating phar <info>' . $this->getTarget() . '</info>');
+        $this->log('[' . $this->step . '/' . $this->step . '] Creating phar <info>' . $this->getTarget() . '</info>');
         $time = microtime(true);
 
         $pathVendor = $this->package->getDirectory() . $this->package->getPathVendor();
@@ -190,7 +190,7 @@ class PharComposer
 
             $lines = file($this->package->getDirectory() . $main, FILE_IGNORE_NEW_LINES);
             if (substr($lines[0], 0, 2) === '#!') {
-                $this->log('    Using referenced shebang "'. $lines[0] . '"');
+                $this->log('    Using referenced shebang "' . $lines[0] . '"');
                 $generator->shebang($lines[0]);
 
                 // remove shebang from main file and add (overwrite)
@@ -200,7 +200,7 @@ class PharComposer
 
             $targetPhar->setStub($generator->generate());
 
-            $chmod = octdec(substr(decoct(fileperms($this->package->getDirectory() . $main)),-4));
+            $chmod = octdec(substr(decoct(fileperms($this->package->getDirectory() . $main)), -4));
             $this->log('    Using referenced chmod ' . sprintf('%04o', $chmod));
         }
 
@@ -216,7 +216,7 @@ class PharComposer
         if ($chmod !== null) {
             $this->log('    Applying chmod ' . sprintf('%04o', $chmod));
             if (chmod($tmp, $chmod) === false) {
-                throw new \UnexpectedValueException('Unable to chmod target file "' . $target .'"');
+                throw new \UnexpectedValueException('Unable to chmod target file "' . $target . '"');
             }
         }
 
@@ -228,14 +228,14 @@ class PharComposer
             // retry renaming after sleeping to give slow network drives some time to flush data
             sleep(5);
             if (rename($tmp, $target) === false) {
-                throw new \UnexpectedValueException('Unable to rename temporary phar archive to "'.$target.'"');
+                throw new \UnexpectedValueException('Unable to rename temporary phar archive to "' . $target . '"');
             }
         }
 
         $time = max(microtime(true) - $time, 0);
 
         $this->log('');
-        $this->log('    <info>OK</info> - Creating <info>' . $this->getTarget() .'</info> (' . $this->getSize($this->getTarget()) . ') completed after ' . round($time, 1) . 's');
+        $this->log('    <info>OK</info> - Creating <info>' . $this->getTarget() . '</info> (' . $this->getSize($this->getTarget()) . ') completed after ' . round($time, 1) . 's');
     }
 
     private function getSize($path)

@@ -183,7 +183,8 @@ class StubGenerator
             $code = array_slice($code, 2);
 
             foreach ($code as $i => $line) {
-                if ((0 === strpos($line, 'use'))
+                if (
+                    (0 === strpos($line, 'use'))
                     && (false === strpos($line, '\\'))
                 ) {
                     unset($code[$i]);

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Clue\PharComposer\Command;
 
 use Clue\PharComposer\Phar\Packager;

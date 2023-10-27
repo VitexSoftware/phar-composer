@@ -2,13 +2,13 @@ Source: phar-composer
 Section: php
 Priority: optional
 Maintainer: "Vítězslav Dvořák" <info@vitexsoftware.cz>
-Build-Depends: debhelper (>=11~),composer, php-xml
+Build-Depends: debhelper (>=11~),composer, php-xml, php-mbstring
 Standards-Version: 4.1.4
 Homepage: https://github.com/clue/phar-composer
 
 Package: phar-composer
 Multi-Arch: foreign
-Depends: ${misc:Depends}, php-cli, php-curl, composer
+Depends: ${misc:Depends}, php-cli, php-curl, composer, php-mbstring
 Architecture: all
 Description: Simple phar creation for every PHP project managed via Composer 
  It takes your existing project's composer.json and builds an executable 

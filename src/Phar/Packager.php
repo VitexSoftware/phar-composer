@@ -47,7 +47,8 @@ class Packager
                 echo $line;
             };
         } elseif ($fn === false) {
-            $fn = function () { };
+            $fn = function () {
+            };
         }
         $this->output = $fn;
     }
@@ -63,8 +64,7 @@ class Packager
     {
         try {
             $this->assertWritable();
-        }
-        catch (UnexpectedValueException $e) {
+        } catch (UnexpectedValueException $e) {
             if (!function_exists('pcntl_exec')) {
                 $this->log('<error>' . $e->getMessage() . '</error>');
                 return;
@@ -91,7 +91,7 @@ class Packager
     public function assertWritable()
     {
         if (ini_get('phar.readonly') === '1') {
-            throw new UnexpectedValueException('Your configuration disabled writing phar files (phar.readonly = On), please update your configuration or run with "php -d phar.readonly=off ' . $_SERVER['argv'][0].'"');
+            throw new UnexpectedValueException('Your configuration disabled writing phar files (phar.readonly = On), please update your configuration or run with "php -d phar.readonly=off ' . $_SERVER['argv'][0] . '"');
         }
     }
 
@@ -135,8 +135,8 @@ class Packager
 
             $that = $this;
             $this->displayMeasure(
-                '[' . $step++ . '/' . $steps.'] Cloning <info>' . $url . '</info> into temporary directory <info>' . $path . '</info>',
-                function() use ($that, $url, $path, $version, $git) {
+                '[' . $step++ . '/' . $steps . '] Cloning <info>' . $url . '</info> into temporary directory <info>' . $path . '</info>',
+                function () use ($that, $url, $path, $version, $git) {
                     $that->exec($git . ' clone ' . escapeshellarg($url) . ' ' . escapeshellarg($path));
 
                     if ($version !== null) {
@@ -157,12 +157,11 @@ class Packager
             $command .= ' install --no-dev --no-progress --no-scripts';
 
             $this->displayMeasure(
-                '[' . $step++ . '/' . $steps.'] Installing dependencies for <info>' . $package . '</info> into <info>' . $path . '</info> (using <info>' . $command . '</info>)',
+                '[' . $step++ . '/' . $steps . '] Installing dependencies for <info>' . $package . '</info> into <info>' . $path . '</info> (using <info>' . $command . '</info>)',
                 function () use ($that, $command, $path) {
                     try {
                         $that->exec($command, $path);
-                    }
-                    catch (UnexpectedValueException $e) {
+                    } catch (UnexpectedValueException $e) {
                         throw new UnexpectedValueException('Installing dependencies via composer failed', 0, $e);
                     }
                 },
@@ -187,12 +186,11 @@ class Packager
 
             $that = $this;
             $this->displayMeasure(
-                '[' . $step++ . '/' . $steps.'] Installing <info>' . $package . '</info> to temporary directory <info>' . $path . '</info> (using <info>' . $command . '</info>)',
+                '[' . $step++ . '/' . $steps . '] Installing <info>' . $package . '</info> to temporary directory <info>' . $path . '</info> (using <info>' . $command . '</info>)',
                 function () use ($that, $command) {
                     try {
                         $that->exec($command);
-                    }
-                    catch (UnexpectedValueException $e) {
+                    } catch (UnexpectedValueException $e) {
                         throw new UnexpectedValueException('Installing package via composer failed', 0, $e);
                     }
                 },
@@ -235,7 +233,7 @@ class Packager
         $time = $this->measure($fn);
 
         $this->log('');
-        $this->log('    <info>OK</info> - ' . $success .' (after ' . round($time, 1) . 's)');
+        $this->log('    <info>OK</info> - ' . $success . ' (after ' . round($time, 1) . 's)');
     }
 
     /**
@@ -262,7 +260,7 @@ class Packager
         // @codeCoverageIgnoreEnd
 
         $process->setTimeout(null);
-        $code = $process->run(function($type, $data) use ($output, &$nl) {
+        $code = $process->run(function ($type, $data) use ($output, &$nl) {
             if ($nl === true) {
                 $data = PHP_EOL . $data;
                 $nl = false;
@@ -332,7 +330,7 @@ class Packager
 
     private function getDirTemporary()
     {
-        $path = sys_get_temp_dir() . '/phar-composer' . mt_rand(0,9);
+        $path = sys_get_temp_dir() . '/phar-composer' . mt_rand(0, 9);
         while (is_dir($path)) {
             $path .= mt_rand(0, 9);
         }
