@@ -55,6 +55,9 @@ distributions.each { distro ->
                             script: "cat debian/files | awk '{print \$1}'",
                             returnStdout: true
                         ).trim().split('\n')
+
+                        // Stash artifacts to ensure they are available for archiving outside the container
+                        stash name: "deb-${distroCode}", includes: "dist/debian/*"
                     }
                 }
 
@@ -74,28 +77,30 @@ distributions.each { distro ->
                     }
                 }
                 stage('Archive artifacts ' + distroName ) {
-                    // Only run if previous stages (Build and Test) succeeded
-                    buildImage.inside {
-                        // Archive all produced artifacts listed in debian/files
-                        artifacts.each { deb_file ->
-                            println "Archiving artifact: " + deb_file
-                            archiveArtifacts artifacts: 'dist/debian/' + deb_file
-                        }
+                    // Ensure artifacts are present in this workspace (robust against earlier steps moving/removing them)
+                    unstash "deb-${distroCode}"
 
-                        // Cleanup: remove any produced files named in debian/files
-                        // Try both the dist location and any potential original locations referenced by debian/files
-                        sh '''
-                            set -e
-                            if [ -f debian/files ]; then
-                              while read -r file _; do
-                                [ -n "$file" ] || continue
-                                rm -f "dist/debian/$file" || true
-                                rm -f "../$file" || true
-                                rm -f "$WORKSPACE/$file" || true
-                              done < debian/files
-                            fi
-                        '''
+                    // Print which artifacts we plan to archive
+                    artifacts.findAll { it.endsWith('.deb') }.each { deb_file ->
+                        println "Archiving artifact: " + deb_file
                     }
+
+                    // Archive all .deb and .buildinfo for this distro
+                    archiveArtifacts artifacts: "dist/debian/*~${distroCode}_*.deb", fingerprint: true
+                    archiveArtifacts artifacts: "dist/debian/*~${distroCode}_*.buildinfo", allowEmptyArchive: true
+
+                    // Cleanup: remove any produced files named in debian/files
+                    sh '''
+                        set -e
+                        if [ -f debian/files ]; then
+                          while read -r file _; do
+                            [ -n "$file" ] || continue
+                            rm -f "dist/debian/$file" || true
+                            rm -f "../$file" || true
+                            rm -f "$WORKSPACE/$file" || true
+                          done < debian/files
+                        fi
+                    '''
                 }
             }
         }
